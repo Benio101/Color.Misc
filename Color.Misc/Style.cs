@@ -1,7 +1,7 @@
-﻿using System.ComponentModel.Composition;
-using Microsoft.VisualStudio.Language.StandardClassification;
+﻿using Microsoft.VisualStudio.Language.StandardClassification;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
+using System.ComponentModel.Composition;
 
 namespace Color.Misc
 {
@@ -16,7 +16,8 @@ namespace Color.Misc
 	internal sealed class Format_cppLocalVariable_Dollar
 		: ClassificationFormatDefinition
 	{
-		public Format_cppLocalVariable_Dollar(){
+		public Format_cppLocalVariable_Dollar()
+		{
 			DisplayName = "C++ Local Variable: \"$\"";
 
 			BackgroundCustomizable = false;
