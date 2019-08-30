@@ -62,7 +62,8 @@ namespace Color.Misc
 		(
 			string[] Source,
 			string[] Search
-		){
+		)
+		{
 			return
 			(
 					Source.Length > 0

@@ -14,7 +14,8 @@ namespace Color.Misc
 	[Order(After = "cppLocalVariable")]
 	[Order(After = Priority.High)]
 	internal sealed class Format_cppLocalVariable_Dollar
-		: ClassificationFormatDefinition
+	:
+		ClassificationFormatDefinition
 	{
 		public Format_cppLocalVariable_Dollar()
 		{
