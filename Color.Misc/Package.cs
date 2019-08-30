@@ -2,9 +2,13 @@
 
 namespace Color.Misc
 {
-	// ReSharper disable once ClassNeverInstantiated.Global
-	// ReSharper disable once UnusedMember.Global
+	// ReSharper disable UnusedMember.Global
+	// Reason: Package is initialized and used externally.
+
 	public sealed class Package
-		: AsyncPackage
+	:
+		AsyncPackage
 	{}
+
+	// ReSharper restore UnusedMember.Global
 }
