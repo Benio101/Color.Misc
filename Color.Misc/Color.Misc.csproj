@@ -58,9 +58,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Debug.cs" />
     <Compile Include="Default.cs" />
     <Compile Include="Meta.cs" />
     <Compile Include="Package.cs" />
+    <Compile Include="Refactor.cs" />
     <Compile Include="Style.cs" />
     <Compile Include="Classifier.cs" />
     <Compile Include="Definition.cs" />
