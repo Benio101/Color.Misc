@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
+#nullable enable
 namespace Color.Misc
 {
 	internal class Classifier
@@ -15,7 +16,7 @@ namespace Color.Misc
 		private readonly IClassifier IClassifier;
 
 		#pragma warning disable 67
-		public event EventHandler<ClassificationChangedEventArgs> ClassificationChanged;
+		public event EventHandler<ClassificationChangedEventArgs>? ClassificationChanged;
 		#pragma warning restore 67
 		
 		#pragma warning disable IDE0052 // Remove unread private members
@@ -25,17 +26,29 @@ namespace Color.Misc
 		private readonly IClassificationType Dark;
 		private readonly IClassificationType Black;
 		private readonly IClassificationType Red;
+		private readonly IClassificationType Red_dark;
 		private readonly IClassificationType Orange;
+		private readonly IClassificationType Orange_dark;
 		private readonly IClassificationType Yellow;
+		private readonly IClassificationType Yellow_dark;
 		private readonly IClassificationType Lime;
+		private readonly IClassificationType Lime_dark;
 		private readonly IClassificationType Green;
+		private readonly IClassificationType Green_dark;
 		private readonly IClassificationType Turquoise;
+		private readonly IClassificationType Turquoise_dark;
 		private readonly IClassificationType Cyan;
+		private readonly IClassificationType Cyan_dark;
 		private readonly IClassificationType Blue;
+		private readonly IClassificationType Blue_dark;
 		private readonly IClassificationType Violet;
+		private readonly IClassificationType Violet_dark;
 		private readonly IClassificationType Purple;
+		private readonly IClassificationType Purple_dark;
 		private readonly IClassificationType Magenta;
+		private readonly IClassificationType Magenta_dark;
 		private readonly IClassificationType Rose;
+		private readonly IClassificationType Rose_dark;
 		#pragma warning restore IDE0052 // Remove unread private members
 
 		public struct Replacement
@@ -47,15 +60,16 @@ namespace Color.Misc
 		public struct Condition
 		{
 			public string Name;
-			public List<string> CantBeClassifiedAs;
-			public List<string> MustBeClassifiedAs;
-			public List<string> MustBeClassifiedAsAnyOf;
+
+			public List<string>? CantBeClassifiedAs;
+			public List<string>? MustBeClassifiedAs;
+			public List<string>? MustBeClassifiedAsAnyOf;
 		}
 
 		public struct Colorize
 		{
 			public Regex Regex;
-			public List<Condition> Conditions;
+			public List<Condition>? Conditions;
 			public List<Replacement> Replacements;
 		}
 
@@ -74,23 +88,35 @@ namespace Color.Misc
 			IsClassificationRunning = false;
 			IClassifier             = Classifier;
 
-			White     = Registry.GetClassificationType("Color.White");
-			Silver    = Registry.GetClassificationType("Color.Silver");
-			Gray      = Registry.GetClassificationType("Color.Gray");
-			Dark      = Registry.GetClassificationType("Color.Dark");
-			Black     = Registry.GetClassificationType("Color.Black");
-			Red       = Registry.GetClassificationType("Color.Red");
-			Orange    = Registry.GetClassificationType("Color.Orange");
-			Yellow    = Registry.GetClassificationType("Color.Yellow");
-			Lime      = Registry.GetClassificationType("Color.Lime");
-			Green     = Registry.GetClassificationType("Color.Green");
-			Turquoise = Registry.GetClassificationType("Color.Turquoise");
-			Cyan      = Registry.GetClassificationType("Color.Cyan");
-			Blue      = Registry.GetClassificationType("Color.Blue");
-			Violet    = Registry.GetClassificationType("Color.Violet");
-			Purple    = Registry.GetClassificationType("Color.Purple");
-			Magenta   = Registry.GetClassificationType("Color.Magenta");
-			Rose      = Registry.GetClassificationType("Color.Rose");
+			White          = Registry.GetClassificationType("Color.White");
+			Silver         = Registry.GetClassificationType("Color.Silver");
+			Gray           = Registry.GetClassificationType("Color.Gray");
+			Dark           = Registry.GetClassificationType("Color.Dark");
+			Black          = Registry.GetClassificationType("Color.Black");
+			Red            = Registry.GetClassificationType("Color.Red");
+			Red_dark       = Registry.GetClassificationType("Color.Red.Dark");
+			Orange         = Registry.GetClassificationType("Color.Orange");
+			Orange_dark    = Registry.GetClassificationType("Color.Orange.Dark");
+			Yellow         = Registry.GetClassificationType("Color.Yellow");
+			Yellow_dark    = Registry.GetClassificationType("Color.Yellow.Dark");
+			Lime           = Registry.GetClassificationType("Color.Lime");
+			Lime_dark      = Registry.GetClassificationType("Color.Lime.Dark");
+			Green          = Registry.GetClassificationType("Color.Green");
+			Green_dark     = Registry.GetClassificationType("Color.Green.Dark");
+			Turquoise      = Registry.GetClassificationType("Color.Turquoise");
+			Turquoise_dark = Registry.GetClassificationType("Color.Turquoise.Dark");
+			Cyan           = Registry.GetClassificationType("Color.Cyan");
+			Cyan_dark      = Registry.GetClassificationType("Color.Cyan.Dark");
+			Blue           = Registry.GetClassificationType("Color.Blue");
+			Blue_dark      = Registry.GetClassificationType("Color.Blue.Dark");
+			Violet         = Registry.GetClassificationType("Color.Violet");
+			Violet_dark    = Registry.GetClassificationType("Color.Violet.Dark");
+			Purple         = Registry.GetClassificationType("Color.Purple");
+			Purple_dark    = Registry.GetClassificationType("Color.Purple.Dark");
+			Magenta        = Registry.GetClassificationType("Color.Magenta");
+			Magenta_dark   = Registry.GetClassificationType("Color.Magenta.Dark");
+			Rose           = Registry.GetClassificationType("Color.Rose");
+			Rose_dark      = Registry.GetClassificationType("Color.Rose.Dark");
 		}
 
 		public IList<ClassificationSpan> GetClassificationSpans(SnapshotSpan Span)
@@ -127,11 +153,11 @@ namespace Color.Misc
 			Colorizes.Add(new Colorize(){
 				Regex = new Regex
 				(
-						@"^[ \f\t\v]*"
+						@"(?<="
+					+		@"^[ \f\t\v]*"
+					+	@")"
 					+	@"(?<Hash>#)"
-					,	RegexOptions.Compiled
 				),
-				Conditions = new List<Condition>(){},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Hash", Color = Dark},
 				},
@@ -168,9 +194,7 @@ namespace Color.Misc
 					+		")"
 					+		Utils.Identifier
 					+	@")"
-					,	RegexOptions.Compiled
 				),
-				Conditions = new List<Condition>(){},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Directive", Color = Gray},
 				},
@@ -196,9 +220,7 @@ namespace Color.Misc
 					+		@")?"
 					+		@"(?<Definition>.*?(?=//|$))?"
 					+	@")?"
-					,	RegexOptions.Compiled
 				),
-				Conditions = new List<Condition>(){},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Directive", Color = Rose},
 					new Replacement(){Name = "Identifier", Color = Purple},
@@ -220,9 +242,7 @@ namespace Color.Misc
 					+		@"\([^)]*"
 					+	@")"
 					+	@"(?<Param>" + Utils.Identifier + @")"
-					,	RegexOptions.Compiled
 				),
-				Conditions = new List<Condition>(){},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Param", Color = Cyan},
 				},
@@ -240,9 +260,7 @@ namespace Color.Misc
 					+		@"\([^)]*"
 					+	@")"
 					+	@"(?<Comma>,)"
-					,	RegexOptions.Compiled
 				),
-				Conditions = new List<Condition>(){},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Comma", Color = Gray},
 				},
@@ -258,9 +276,7 @@ namespace Color.Misc
 					+	@")"
 					+	@"(?<Directive>(?:el)?if)"
 					+	Utils.IdentifierEndingBoundary
-					,	RegexOptions.Compiled
 				),
-				Conditions = new List<Condition>(){},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Directive", Color = Violet},
 				},
@@ -280,15 +296,12 @@ namespace Color.Misc
 					+	@"(?!(?:defined|__has_cpp_attribute|__has_include)" + Utils.IdentifierEndingBoundary + @")"
 					+	@"(?<!__has_include[ \f\t\v]*\([^)]*)"
 					+	@"(?<Identifier>" + Utils.Identifier + @")"
-					,	RegexOptions.Compiled
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
 						Name = "Identifier",
 						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment"},
-						MustBeClassifiedAs = new List<string>(){},
-						MustBeClassifiedAsAnyOf = new List<string>(){},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Identifier", Color = Purple},
@@ -308,15 +321,12 @@ namespace Color.Misc
 					+			@"(?<CloseParenthese>\))?"
 					+		@")?"
 					+	@")?"
-					,	RegexOptions.Compiled
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
 						Name = "Command",
-						CantBeClassifiedAs = new List<string>(){},
 						MustBeClassifiedAs = new List<string>(){"preprocessor keyword"},
-						MustBeClassifiedAsAnyOf = new List<string>(){},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Command", Color = Blue},
@@ -339,15 +349,12 @@ namespace Color.Misc
 					+			@"(?<CloseParenthese>\))?"
 					+		@")?"
 					+	@")?"
-					,	RegexOptions.Compiled
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
 						Name = "Command",
-						CantBeClassifiedAs = new List<string>(){},
 						MustBeClassifiedAs = new List<string>(){"cppMacro"},
-						MustBeClassifiedAsAnyOf = new List<string>(){},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Command", Color = Blue},
@@ -372,15 +379,12 @@ namespace Color.Misc
 					+			@"(?<CloseParenthese>\))?"
 					+		@")?"
 					+	@")?"
-					,	RegexOptions.Compiled
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
 						Name = "Command",
-						CantBeClassifiedAs = new List<string>(){},
 						MustBeClassifiedAs = new List<string>(){"cppMacro"},
-						MustBeClassifiedAsAnyOf = new List<string>(){},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Command", Color = Blue},
@@ -406,9 +410,7 @@ namespace Color.Misc
 					+		@"[ \f\t\v]+"
 					+		@"(?<Identifier>" + Utils.Identifier + @")"
 					+	@")?"
-					,	RegexOptions.Compiled
 				),
-				Conditions = new List<Condition>(){},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Directive", Color = Violet},
 					new Replacement(){Name = "Identifier", Color = Purple},
@@ -425,9 +427,7 @@ namespace Color.Misc
 					+	@")"
 					+	@"(?<Directive>else|endif)"
 					+	Utils.IdentifierEndingBoundary
-					,	RegexOptions.Compiled
 				),
-				Conditions = new List<Condition>(){},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Directive", Color = Violet},
 				},
@@ -450,9 +450,7 @@ namespace Color.Misc
 					+		@"(?<Path>[^"">]*)"
 					+		@"(?<ClosePath>["">])"
 					+	@")?"
-					,	RegexOptions.Compiled
 				),
-				Conditions = new List<Condition>(){},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Directive", Color = Turquoise},
 					new Replacement(){Name = "Path", Color = Green},
@@ -473,9 +471,7 @@ namespace Color.Misc
 					+		@"include[ \f\t\v]+"
 					+		@"""Nade/Directives/Index/[^""]+\.h"""
 					+	@")"
-					,	RegexOptions.Compiled
 				),
-				Conditions = new List<Condition>(){},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Directive", Color = Dark},
 				},
@@ -495,9 +491,7 @@ namespace Color.Misc
 					+		@"[ \f\t\v]+"
 					+		@"(?<Identifier>" + Utils.Identifier + @")"
 					+	@")?"
-					,	RegexOptions.Compiled
 				),
-				Conditions = new List<Condition>(){},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Directive", Color = Rose},
 					new Replacement(){Name = "Identifier", Color = Purple},
@@ -518,15 +512,12 @@ namespace Color.Misc
 					+		@"[ \f\t\v]+"
 					+		@"(?<Message>(.*?(?=//|$)))"
 					+	@")?"
-					,	RegexOptions.Compiled
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
 						Name = "Directive",
 						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment"},
-						MustBeClassifiedAs = new List<string>(){},
-						MustBeClassifiedAsAnyOf = new List<string>(){},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Directive", Color = Rose},
@@ -548,14 +539,20 @@ namespace Color.Misc
 					+		@"[ \f\t\v]+"
 					+		@"(?<Identifier>" + Utils.Identifier + @")"
 					+	@")?"
-					,	RegexOptions.Compiled
 				),
-				Conditions = new List<Condition>(){},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Directive", Color = Gray},
 					new Replacement(){Name = "Identifier", Color = Green},
 				},
 			});
+
+			var Pragmas = new List<string>()
+			{
+				@"push_macro",
+				@"pop_macro",
+				@"region",
+				@"endregion",
+			};
 
 			// #pragma
 			Colorizes.Add(new Colorize(){
@@ -569,14 +566,16 @@ namespace Color.Misc
 					+	Utils.IdentifierEndingBoundary
 					+	@"(?:"
 					+		@"[ \f\t\v]+"
-					+		@"(?<Identifier>" + Utils.Identifier + @")"
+					+		@"(?!"
+					+			@"(?:" + string.Join(@"|", Pragmas.Select(Pragma => Pragma).ToArray()) + @")"
+					+			Utils.IdentifierEndingBoundary
+					+		")"
+					+		@"(?<Pragma>" + Utils.Identifier + @")"
 					+	@")?"
-					,	RegexOptions.Compiled
 				),
-				Conditions = new List<Condition>(){},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Directive", Color = Dark},
-					new Replacement(){Name = "Identifier", Color = Gray},
+					new Replacement(){Name = "Pragma", Color = Gray},
 				},
 			});
 
@@ -599,11 +598,9 @@ namespace Color.Misc
 					+			@"(?<PunctRight>""[ \f\t\v]*\))?"
 					+		@")?"
 					+	@")?"
-					,	RegexOptions.Compiled
 				),
-				Conditions = new List<Condition>(){},
 				Replacements = new List<Replacement>(){
-					new Replacement(){Name = "Pragma", Color = Silver},
+					new Replacement(){Name = "Pragma", Color = Gray},
 					new Replacement(){Name = "Macro", Color = Purple},
 					new Replacement(){Name = "PunctLeft", Color = Gray},
 					new Replacement(){Name = "PunctRight", Color = Gray},
@@ -617,27 +614,13 @@ namespace Color.Misc
 						@"(?<="
 					+		@"^[ \f\t\v]*"
 					+		@"#[ \f\t\v]*"
+					+		@"pragma[ \f\t\v]+"
 					+	@")"
-					+	@"(?<Pragma>pragma)"
+					+	@"(?<Pragma>region)"
 					+	Utils.IdentifierEndingBoundary
-					+	@"(?:"
-					+		@"[ \f\t\v]+"
-					+		@"(?<Region>region)"
-					+		Utils.IdentifierEndingBoundary
-					+	@")?"
-					,	RegexOptions.Compiled
 				),
-				Conditions = new List<Condition>(){
-					new Condition(){
-						Name = "Region",
-						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment"},
-						MustBeClassifiedAs = new List<string>(){},
-						MustBeClassifiedAsAnyOf = new List<string>(){},
-					}
-				},
 				Replacements = new List<Replacement>(){
-					new Replacement(){Name = "Pragma", Color = Dark},
-					new Replacement(){Name = "Region", Color = Gray},
+					new Replacement(){Name = "Pragma", Color = Gray},
 				},
 			});
 
@@ -649,8 +632,8 @@ namespace Color.Misc
 				new Colors(){Name = "Public", Color = Green},
 				new Colors(){Name = "Protected", Color = Yellow},
 				new Colors(){Name = "Private", Color = Red},
-
-				new Colors(){Name = "Macros", Color = Purple},
+				
+				new Colors(){Name = "(?:(?:Object|Function)-like macros|Macros)", Color = Purple},
 				new Colors(){Name = "Friends", Color = Blue},
 				new Colors(){Name = "Usings", Color = Blue},
 				new Colors(){Name = "Components", Color = Turquoise},
@@ -689,9 +672,7 @@ namespace Color.Misc
 						+	@")"
 						+	@"(?<Region>" + PragmaOuterRegion.Name + ")"
 						+	Utils.IdentifierEndingBoundary
-						,	RegexOptions.Compiled
 					),
-					Conditions = new List<Condition>(){},
 					Replacements = new List<Replacement>(){
 						new Replacement(){Name = "Region", Color = PragmaOuterRegion.Color},
 					},
@@ -699,7 +680,7 @@ namespace Color.Misc
 
 			var PragmaInnerRegions = new List<Colors>()
 			{
-				new Colors(){Name = "macro", Color = Purple},
+				new Colors(){Name = "(?:(?:object|function)-like )?macro", Color = Purple},
 				new Colors(){Name = "friend", Color = Blue},
 				new Colors(){Name = "using", Color = Blue},
 				new Colors(){Name = "component", Color = Turquoise},
@@ -744,9 +725,7 @@ namespace Color.Misc
 						+		@"[ \f\t\v]+"
 						+		@"(?<Name>(.*?(?=//|$)))"
 						+	@")?"
-						,	RegexOptions.Compiled
 					),
-					Conditions = new List<Condition>(){},
 					Replacements = new List<Replacement>(){
 						new Replacement(){Name = "Region", Color = Blue},
 						new Replacement(){Name = "Name", Color = PragmaInnerRegion.Color},
@@ -769,11 +748,26 @@ namespace Color.Misc
 					+		Utils.IdentifierEndingBoundary
 					+	@")"
 					+	@"(?<Region>.*?(?=//|$))"
-					,	RegexOptions.Compiled
 				),
-				Conditions = new List<Condition>(){},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Region", Color = Silver},
+				},
+			});
+
+			// #pragma endregion
+			Colorizes.Add(new Colorize(){
+				Regex = new Regex
+				(
+						@"(?<="
+					+		@"^[ \f\t\v]*"
+					+		@"#[ \f\t\v]*"
+					+		@"pragma[ \f\t\v]+"
+					+	@")"
+					+	@"(?<Pragma>endregion)"
+					+	Utils.IdentifierEndingBoundary
+				),
+				Replacements = new List<Replacement>(){
+					new Replacement(){Name = "Pragma", Color = Dark},
 				},
 			});
 
@@ -784,17 +778,20 @@ namespace Color.Misc
 			Colorizes.Add(new Colorize(){
 				Regex = new Regex
 				(
-						@"^[ \f\t\v]*"
+						@"(?<="
+					+		@"(?<NotComment>^|.)"
+					+	@")"
 					+	@"(?<Slashes>//+)"
-					,	RegexOptions.Compiled
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
+						Name = "NotComment",
+						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment"},
+					},
+					new Condition(){
 						Name = "Slashes",
-						CantBeClassifiedAs = new List<string>(){},
-						MustBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment"},
-						MustBeClassifiedAsAnyOf = new List<string>(){},
-					}
+						MustBeClassifiedAsAnyOf = new List<string>(){"comment", "XML Doc Comment"},
+					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Slashes", Color = Dark},
@@ -806,19 +803,21 @@ namespace Color.Misc
 				Regex = new Regex
 				(
 						@"(?<="
-					+		@"^[ \f\t\v]*"
-					+		@"//+"
+					+		@"(?<NotComment>^|.)"
+					+		@"(?<Slashes>//+)"
+					+		@"\t"
 					+	@")"
-					+	@"(?<Code>\t.*)"
-					,	RegexOptions.Compiled
+					+	@"(?<Code>.*)"
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
+						Name = "NotComment",
+						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment"},
+					},
+					new Condition(){
 						Name = "Slashes",
-						CantBeClassifiedAs = new List<string>(){},
-						MustBeClassifiedAs = new List<string>(){},
 						MustBeClassifiedAsAnyOf = new List<string>(){"comment", "XML Doc Comment"},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Code", Color = Dark},
@@ -830,21 +829,23 @@ namespace Color.Misc
 				Regex = new Regex
 				(
 						@"(?<="
-					+		@"^[ \f\t\v]*"
-					+		@"//+ *"
+					+		@"(?<NotComment>^|.)"
+					+		@"(?<Slashes>//+)"
+					+		@" *"
 					+	@")"
 					+	@"(?<BackSlash>\\)"
-					+	@"(?<Command>(?:brief|details|note))"
+					+	@"(?<Command>brief|details|note)"
 					+	Utils.IdentifierEndingBoundary
-					,	RegexOptions.Compiled
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
+						Name = "NotComment",
+						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment"},
+					},
+					new Condition(){
 						Name = "Slashes",
-						CantBeClassifiedAs = new List<string>(){},
-						MustBeClassifiedAs = new List<string>(){},
 						MustBeClassifiedAsAnyOf = new List<string>(){"comment", "XML Doc Comment"},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "BackSlash", Color = Dark},
@@ -857,21 +858,23 @@ namespace Color.Misc
 				Regex = new Regex
 				(
 						@"(?<="
-					+		@"^[ \f\t\v]*"
-					+		@"//+ *"
+					+		@"(?<NotComment>^|.)"
+					+		@"(?<Slashes>//+)"
+					+		@" *"
 					+	@")"
 					+	@"(?<BackSlash>\\)"
-					+	@"(?<Command>(?:return|spare))"
+					+	@"(?<Command>return|spare)"
 					+	Utils.IdentifierEndingBoundary
-					,	RegexOptions.Compiled
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
+						Name = "NotComment",
+						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment"},
+					},
+					new Condition(){
 						Name = "Slashes",
-						CantBeClassifiedAs = new List<string>(){},
-						MustBeClassifiedAs = new List<string>(){},
 						MustBeClassifiedAsAnyOf = new List<string>(){"comment", "XML Doc Comment"},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "BackSlash", Color = Dark},
@@ -884,21 +887,23 @@ namespace Color.Misc
 				Regex = new Regex
 				(
 						@"(?<="
-					+		@"^[ \f\t\v]*"
-					+		@"//+ *"
+					+		@"(?<NotComment>^|.)"
+					+		@"(?<Slashes>//+)"
+					+		@" *"
 					+	@")"
 					+	@"(?<BackSlash>\\)"
 					+	@"(?<Command>see)"
 					+	Utils.IdentifierEndingBoundary
-					,	RegexOptions.Compiled
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
+						Name = "NotComment",
+						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment"},
+					},
+					new Condition(){
 						Name = "Slashes",
-						CantBeClassifiedAs = new List<string>(){},
-						MustBeClassifiedAs = new List<string>(){},
 						MustBeClassifiedAsAnyOf = new List<string>(){"comment", "XML Doc Comment"},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "BackSlash", Color = Dark},
@@ -911,21 +916,23 @@ namespace Color.Misc
 				Regex = new Regex
 				(
 						@"(?<="
-					+		@"^[ \f\t\v]*"
-					+		@"//+ *"
+					+		@"(?<NotComment>^|.)"
+					+		@"(?<Slashes>//+)"
+					+		@" *"
 					+	@")"
 					+	@"(?<BackSlash>\\)"
 					+	@"(?<Command>bug)"
 					+	Utils.IdentifierEndingBoundary
-					,	RegexOptions.Compiled
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
+						Name = "NotComment",
+						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment"},
+					},
+					new Condition(){
 						Name = "Slashes",
-						CantBeClassifiedAs = new List<string>(){},
-						MustBeClassifiedAs = new List<string>(){},
 						MustBeClassifiedAsAnyOf = new List<string>(){"comment", "XML Doc Comment"},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "BackSlash", Color = Dark},
@@ -938,21 +945,23 @@ namespace Color.Misc
 				Regex = new Regex
 				(
 						@"(?<="
-					+		@"^[ \f\t\v]*"
-					+		@"//+ *"
+					+		@"(?<NotComment>^|.)"
+					+		@"(?<Slashes>//+)"
+					+		@" *"
 					+	@")"
 					+	@"(?<BackSlash>\\)"
 					+	@"(?<Command>todo)"
 					+	Utils.IdentifierEndingBoundary
-					,	RegexOptions.Compiled
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
+						Name = "NotComment",
+						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment"},
+					},
+					new Condition(){
 						Name = "Slashes",
-						CantBeClassifiedAs = new List<string>(){},
-						MustBeClassifiedAs = new List<string>(){},
 						MustBeClassifiedAsAnyOf = new List<string>(){"comment", "XML Doc Comment"},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "BackSlash", Color = Dark},
@@ -965,21 +974,23 @@ namespace Color.Misc
 				Regex = new Regex
 				(
 						@"(?<="
-					+		@"^[ \f\t\v]*"
-					+		@"//+ *"
+					+		@"(?<NotComment>^|.)"
+					+		@"(?<Slashes>//+)"
+					+		@" *"
 					+	@")"
 					+	@"(?<BackSlash>\\)"
 					+	@"(?<Command>hack)"
 					+	Utils.IdentifierEndingBoundary
-					,	RegexOptions.Compiled
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
+						Name = "NotComment",
+						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment"},
+					},
+					new Condition(){
 						Name = "Slashes",
-						CantBeClassifiedAs = new List<string>(){},
-						MustBeClassifiedAs = new List<string>(){},
 						MustBeClassifiedAsAnyOf = new List<string>(){"comment", "XML Doc Comment"},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "BackSlash", Color = Dark},
@@ -992,21 +1003,27 @@ namespace Color.Misc
 				Regex = new Regex
 				(
 						@"(?<="
-					+		@"^[ \f\t\v]*"
-					+		@"//+ *"
+					+		@"(?<NotComment>^|.)"
+					+		@"(?<Slashes>//+)"
+					+		@" *"
 					+	@")"
 					+	@"(?<BackSlash>\\)"
-					+	@"(?<Command>param) +"
-					+	@"(?<Param>" + Utils.Identifier + @")"
-					,	RegexOptions.Compiled
+					+	@"(?<Command>param)"
+					+	Utils.IdentifierEndingBoundary
+					+	@"(?:"
+					+		@" +"
+					+		@"(?<Param>" + Utils.Identifier + @")"
+					+	@")?"
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
+						Name = "NotComment",
+						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment"},
+					},
+					new Condition(){
 						Name = "Slashes",
-						CantBeClassifiedAs = new List<string>(){},
-						MustBeClassifiedAs = new List<string>(){},
 						MustBeClassifiedAsAnyOf = new List<string>(){"comment", "XML Doc Comment"},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "BackSlash", Color = Dark},
@@ -1020,21 +1037,27 @@ namespace Color.Misc
 				Regex = new Regex
 				(
 						@"(?<="
-					+		@"^[ \f\t\v]*"
-					+		@"//+ *"
+					+		@"(?<NotComment>^|.)"
+					+		@"(?<Slashes>//+)"
+					+		@" *"
 					+	@")"
 					+	@"(?<BackSlash>\\)"
-					+	@"(?<Command>tparam) +"
-					+	@"(?<TParam>" + Utils.Identifier + @")"
-					,	RegexOptions.Compiled
+					+	@"(?<Command>tparam)"
+					+	Utils.IdentifierEndingBoundary
+					+	@"(?:"
+					+		@" +"
+					+		@"(?<TParam>" + Utils.Identifier + @")"
+					+	@")?"
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
+						Name = "NotComment",
+						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment"},
+					},
+					new Condition(){
 						Name = "Command",
-						CantBeClassifiedAs = new List<string>(){},
-						MustBeClassifiedAs = new List<string>(){},
 						MustBeClassifiedAsAnyOf = new List<string>(){"comment", "XML Doc Comment"},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "BackSlash", Color = Dark},
@@ -1048,23 +1071,25 @@ namespace Color.Misc
 				Regex = new Regex
 				(
 						@"(?<="
-					+		@"^[ \f\t\v]*"
-					+		@"//+"
+					+		@"(?<NotComment>^|.)"
+					+		@"(?<Slashes>//+)"
+					+		@" *"
 					+	@")"
 					+	@"(?<Mark>\>)"
 					+	@"(?<Quote>.*)"
-					,	RegexOptions.Compiled
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
+						Name = "NotComment",
+						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment"},
+					},
+					new Condition(){
 						Name = "Quote",
-						CantBeClassifiedAs = new List<string>(){},
-						MustBeClassifiedAs = new List<string>(){},
 						MustBeClassifiedAsAnyOf = new List<string>(){"comment", "XML Doc Comment"},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
-					new Replacement(){Name = "Mark", Color = Gray},
+					new Replacement(){Name = "Mark", Color = Dark},
 					new Replacement(){Name = "Quote", Color = Green},
 				},
 			});
@@ -1088,58 +1113,146 @@ namespace Color.Misc
 
 			// comment: references
 			foreach (var Reference in References)
-				Colorizes.Add(new Colorize(){
-					Regex = new Regex
-					(
-							@"(?<="
-						+		@"^[ \f\t\v]*"
-						+		@"//+ +[^`]*(?:`[^`]*`[^`]*)*"
-						+	@")"
-						+	@"(?<Mark>" + Reference.Name + @")"
-						+	@"(?<Reference>" + Utils.Identifier + @")"
-						,	RegexOptions.Compiled
-					),
-					Conditions = new List<Condition>(){
-						new Condition(){
-							Name = "Reference",
-							CantBeClassifiedAs = new List<string>(){},
-							MustBeClassifiedAs = new List<string>(){},
-							MustBeClassifiedAsAnyOf = new List<string>(){"comment", "XML Doc Comment"},
-						}
-					},
-					Replacements = new List<Replacement>(){
-						new Replacement(){Name = "Mark", Color = Gray},
-						new Replacement(){Name = "Reference", Color = Reference.Color},
-					},
-				});
-
-			// comment: `inline code`
 			Colorizes.Add(new Colorize(){
 				Regex = new Regex
 				(
-						@"(?<="
-					+		@"^[ \f\t\v]*"
-					+		@"//+ +[^`]*(?:`[^`]*`[^`]*)*"
+						@"(?<="                       // Ensure `Slashes` is beginning of comment ∵
+					+		@"(?<NotComment>^|.)"     // - there's nothing before `Slashes` xor a character before `Slashes` is not a comment.
+					+		@"(?<Slashes>//+)"        // - `Slashes` is a comment.
+					+		@" +"                     // Ensure comment is not a disabled code ∵ it does not begins with a tab.
+					+		@"(?!>)"                  // Ensure comment is not a quote ∵ it does not begins with a closing chevron.
+					+		@"[^`]*(?:`[^`]*`[^`]*)*" // Make sure reference is not inside an inline code ∵ it's not preceded by odd number of backticks.
 					+	@")"
-					+	@"(?<MarkLeft>`)"
-					+	@"(?:"
-					+		@"(?<Code>[^`]*)"
-					+		@"(?<MarkRight>`)?"
-					+	@")?"
-					,	RegexOptions.Compiled
+					+	Utils.IdentifierBeginningBoundary
+					+	@"(?<Mark>" + Reference.Name + @")"
+					+	@"(?<Reference>" + Utils.Identifier + @")"
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
-						Name = "Reference",
-						CantBeClassifiedAs = new List<string>(){},
-						MustBeClassifiedAs = new List<string>(){},
+						Name = "NotComment",
+						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment"},
+					},
+					new Condition(){
+						Name = "Slashes",
 						MustBeClassifiedAsAnyOf = new List<string>(){"comment", "XML Doc Comment"},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
-					new Replacement(){Name = "MarkLeft", Color = Dark},
-					new Replacement(){Name = "MarkRight", Color = Dark},
-					new Replacement(){Name = "Code", Color = Gray},
+					new Replacement(){Name = "Mark", Color = Dark},
+					new Replacement(){Name = "Reference", Color = Reference.Color},
+				},
+			});
+
+			// Comment: inline code
+			Colorizes.Add(new Colorize(){
+				Regex = new Regex
+				(
+						@"(?<="                       // Ensure `Slashes` is beginning of comment ∵
+					+		@"(?<NotComment>^|.)"     // - there's nothing before `Slashes` xor a character before `Slashes` is not a comment.
+					+		@"(?<Slashes>//+)"        // - `Slashes` is a comment.
+					+		@" +"                     // Ensure comment is not a disabled code ∵ it does not begins with a tab.
+					+		@"(?!>)"                  // Ensure comment is not a quote ∵ it does not begins with a closing chevron.
+					+		@"[^`]*(?:`[^`]*`[^`]*)*" // Make sure reference is not inside an inline code ∵ it's not preceded by odd number of backticks.
+					+	@")"
+					+	@"(?<OpeningBacktick>`)"
+					+	@"(?:"
+					+		@"(?<InlineCode>[^`]*)"
+					+		@"(?<ClosingBacktick>`)?"
+					+	@")?"
+				),
+				Conditions = new List<Condition>(){
+					new Condition(){
+						Name = "NotComment",
+						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment"},
+					},
+					new Condition(){
+						Name = "Slashes",
+						MustBeClassifiedAsAnyOf = new List<string>(){"comment", "XML Doc Comment"},
+					},
+				},
+				Replacements = new List<Replacement>(){
+					new Replacement(){Name = "OpeningBacktick", Color = Dark},
+					new Replacement(){Name = "ClosingBacktick", Color = Dark},
+					new Replacement(){Name = "InlineCode", Color = Silver},
+				},
+			});
+
+			#endregion
+			#region Attributes
+
+			var Attributes = new List<Colors>()
+			{
+				new Colors(){Name = @"carries_dependency",        Color = Blue},
+				new Colors(){Name = @"fallthrough",               Color = Violet},
+				new Colors(){Name = @"likely",                    Color = Green},
+				new Colors(){Name = @"maybe_unused",              Color = Yellow},
+				new Colors(){Name = @"no_unique_address",         Color = Blue},
+				new Colors(){Name = @"nodiscard",                 Color = Blue},
+				new Colors(){Name = @"noreturn",                  Color = Rose},
+				new Colors(){Name = @"optimize_for_synchronized", Color = Blue},
+				new Colors(){Name = @"unlikely",                  Color = Red},
+			};
+
+			// Attributes
+			foreach (var Attribute in Attributes)
+				Colorizes.Add(new Colorize(){
+					Regex = new Regex
+					(
+							@"(?<OpenBrackets>\[\[)"
+						+	@"(?<Attribute>" + Attribute.Name + @")"
+						+	@"(?<CloseBrackets>\]\])"
+					),
+					Conditions = new List<Condition>(){
+						new Condition(){
+							Name = "OpenBrackets",
+							MustBeClassifiedAs = new List<string>(){"operator"},
+						},
+						new Condition(){
+							Name = "CloseBrackets",
+							MustBeClassifiedAs = new List<string>(){"operator"},
+						},
+					},
+					Replacements = new List<Replacement>(){
+						new Replacement(){Name = "OpenBrackets",  Color = Gray},
+						new Replacement(){Name = "Attribute",     Color = Attribute.Color},
+						new Replacement(){Name = "CloseBrackets", Color = Gray},
+					},
+				});
+
+			// Attribute: deprecated
+			Colorizes.Add(new Colorize(){
+				Regex = new Regex
+				(
+						@"(?<OpenBrackets>\[\[)"
+					+	@"(?<Attribute>deprecated)"
+					+	@"(?:"
+					+		@"(?<OpenParens>\()"
+					+		@"(?<OpenQuote>"")"
+					+		@"(?<String>[^""]*)"
+					+		@"(?<CloseQuote>"")"
+					+		@"(?<CloseParens>\))"
+					+	@")?"
+					+	@"(?<CloseBrackets>\]\])"
+				),
+				Conditions = new List<Condition>(){
+					new Condition(){
+						Name = "OpenBrackets",
+						MustBeClassifiedAs = new List<string>(){"operator"},
+					},
+					new Condition(){
+						Name = "CloseBrackets",
+						MustBeClassifiedAs = new List<string>(){"operator"},
+					},
+				},
+				Replacements = new List<Replacement>(){
+					new Replacement(){Name = "OpenBrackets",  Color = Gray},
+					new Replacement(){Name = "CloseBrackets", Color = Gray},
+					new Replacement(){Name = "Attribute",     Color = Rose},
+					new Replacement(){Name = "OpenParens",    Color = Gray},
+					new Replacement(){Name = "CloseParens",   Color = Gray},
+					new Replacement(){Name = "OpenQuote",     Color = Gray},
+					new Replacement(){Name = "CloseQuote",    Color = Gray},
+					new Replacement(){Name = "String",        Color = Green},
 				},
 			});
 
@@ -1148,72 +1261,69 @@ namespace Color.Misc
 
 			var Keywords = new List<string>()
 			{
-				@"\balignas\b",
-				@"\balignof\b",
-				@"\batomic_cancel\b",
-				@"\batomic_commit\b",
-				@"\batomic_noexcept\b",
-				@"\bclass\b",
-				@"\bconcept\b",
-				@"\bconst\b",
-				@"\bconsteval\b",
-				@"\bconstexpr\b",
-				@"\bconstinit\b",
-				@"\bconst_cast\b",
-				@"\bdecltype\b",
-				@"\bdefault(?![ \f\t\v]*:)\b",
-				@"\bdynamic_cast\b",
-				@"\benum\b",
-				@"\bexplicit\b",
-				@"\bexport\b",
-				@"\bextern\b",
-				@"\bfinal\b",
-				@"\bfriend\b",
-				@"\bimport\b",
-				@"\binline\b",
-				@"\bmodule\b",
-				@"\bmutable\b",
-				@"\bnamespace\b",
-				@"\bnoexcept\b",
-				@"\boperator\b",
-				@"\boverride\b",
-				@"\breflexpr\b",
-				@"\breinterpret_cast\b",
-				@"\brequires\b",
-				@"\bsizeof\b",
-				@"\bstatic\b",
-				@"\bstatic_assert\b",
-				@"\bstatic_cast\b",
-				@"\bstruct\b",
-				@"\bsynchronized\b",
-				@"\btemplate\b",
-				@"\bthis\b",
-				@"\bthread_local\b",
-				@"\btransaction_safe\b",
-				@"\btransaction_safe_dynamic\b",
-				@"\btypedef\b",
-				@"\btypeid\b",
-				@"\btypename\b",
-				@"\bunion\b",
-				@"\busing\b",
-				@"\bvirtual\b",
-				@"\bvolatile\b",
+				Utils.IdentifierBeginningBoundary + @"alignas"                  + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"alignof"                  + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"atomic_cancel"            + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"atomic_commit"            + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"atomic_noexcept"          + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"class"                    + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"concept"                  + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"const"                    + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"consteval"                + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"constexpr"                + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"constinit"                + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"const_cast"               + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"decltype"                 + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"default(?![ \f\t\v]*:)"   + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"dynamic_cast"             + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"enum"                     + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"explicit"                 + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"export"                   + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"extern"                   + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"final"                    + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"friend"                   + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"import"                   + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"inline"                   + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"module"                   + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"mutable"                  + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"namespace"                + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"noexcept"                 + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"operator"                 + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"override"                 + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"reflexpr"                 + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"reinterpret_cast"         + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"requires"                 + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"sizeof"                   + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"static"                   + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"static_assert"            + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"static_cast"              + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"struct"                   + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"synchronized"             + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"template"                 + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"this"                     + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"thread_local"             + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"transaction_safe"         + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"transaction_safe_dynamic" + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"typedef"                  + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"typeid"                   + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"typename"                 + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"union"                    + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"using"                    + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"virtual"                  + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"volatile"                 + Utils.IdentifierEndingBoundary,
 			};
 
 			// Keywords
 			Colorizes.Add(new Colorize(){
 				Regex = new Regex
 				(
-						@"(?<Keyword>" + string.Join(@"|", Keywords.Select(Keyword => Keyword).ToArray()) + @")"
-					,	RegexOptions.Compiled
+					@"(?<Keyword>" + string.Join(@"|", Keywords.Select(Keyword => Keyword).ToArray()) + @")"
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
 						Name = "Keyword",
 						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment", "string"},
-						MustBeClassifiedAs = new List<string>(){"keyword"},
-						MustBeClassifiedAsAnyOf = new List<string>(){},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Keyword", Color = Blue},
@@ -1222,37 +1332,35 @@ namespace Color.Misc
 
 			var Types = new List<string>()
 			{
-				@"\bauto\b",
-				@"\bbool\b",
-				@"\bchar\b",
-				@"\bchar8_t\b",
-				@"\bchar16_t\b",
-				@"\bchar32_t\b",
-				@"\bdouble\b",
-				@"\bfloat\b",
-				@"\bint\b",
-				@"\blong\b",
-				@"\bshort\b",
-				@"\bsigned\b",
-				@"\bunsigned\b",
-				@"\bvoid\b",
-				@"\bwchar_t\b",
+				Utils.IdentifierBeginningBoundary + @"auto"     + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"bool"     + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"char"     + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"char8_t"  + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"char16_t" + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"char32_t" + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"double"   + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"float"    + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"int"      + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"long"     + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"short"    + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"signed"   + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"unsigned" + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"void"     + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"wchar_t"  + Utils.IdentifierEndingBoundary,
 			};
 
 			// Types
 			Colorizes.Add(new Colorize(){
 				Regex = new Regex
 				(
-						@"(?<Type>" + string.Join(@"|", Types.Select(Type => Type).ToArray()) + @")"
-					,	RegexOptions.Compiled
+					@"(?<Type>" + string.Join(@"|", Types.Select(Type => Type).ToArray()) + @")"
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
 						Name = "Type",
 						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment", "string"},
 						MustBeClassifiedAs = new List<string>(){"keyword"},
-						MustBeClassifiedAsAnyOf = new List<string>(){},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Type", Color = Lime},
@@ -1261,40 +1369,38 @@ namespace Color.Misc
 
 			var Flows = new List<string>()
 			{
-				@"\bbreak\b",
-				@"\bcase\b",
-				@"\bcatch\b",
-				@"\bcontinue\b",
-				@"\bco_await\b",
-				@"\bco_return\b",
-				@"\bco_yield\b",
-				@"\bdefault\b(?=[ \f\t\v]*:)",
-				@"\bdo\b",
-				@"\belse\b",
-				@"\bfor\b",
-				@"\bgoto\b",
-				@"\bif\b",
-				@"\breturn\b",
-				@"\bswitch\b",
-				@"\bthrow\b",
-				@"\btry\b",
-				@"\bwhile\b",
+				Utils.IdentifierBeginningBoundary + @"break"     + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"case"      + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"catch"     + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"continue"  + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"co_await"  + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"co_return" + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"co_yield"  + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"default"   + @"(?=[ \f\t\v]*:)",
+				Utils.IdentifierBeginningBoundary + @"do"        + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"else"      + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"for"       + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"goto"      + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"if"        + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"return"    + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"switch"    + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"throw"     + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"try"       + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"while"     + Utils.IdentifierEndingBoundary,
 			};
 
 			// Flows
 			Colorizes.Add(new Colorize(){
 				Regex = new Regex
 				(
-						@"(?<Flow>" + string.Join(@"|", Flows.Select(Flow => Flow).ToArray()) + @")"
-					,	RegexOptions.Compiled
+					@"(?<Flow>" + string.Join(@"|", Flows.Select(Flow => Flow).ToArray()) + @")"
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
 						Name = "Flow",
 						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment", "string"},
-						MustBeClassifiedAs = new List<string>(){},
 						MustBeClassifiedAsAnyOf = new List<string>(){"keyword", "cppControlKeyword"},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Flow", Color = Violet},
@@ -1303,25 +1409,23 @@ namespace Color.Misc
 
 			var Statics = new List<string>()
 			{
-				@"\bfalse\b",
-				@"\bnullptr\b",
-				@"\btrue\b",
+				Utils.IdentifierBeginningBoundary + @"false"   + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"nullptr" + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"true"    + Utils.IdentifierEndingBoundary,
 			};
 
 			// Statics
 			Colorizes.Add(new Colorize(){
 				Regex = new Regex
 				(
-						@"(?<Static>" + string.Join(@"|", Statics.Select(Static => Static).ToArray()) + @")"
-					,	RegexOptions.Compiled
+					@"(?<Static>" + string.Join(@"|", Statics.Select(Static => Static).ToArray()) + @")"
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
 						Name = "Static",
 						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment", "string"},
 						MustBeClassifiedAs = new List<string>(){"keyword"},
-						MustBeClassifiedAsAnyOf = new List<string>(){},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Static", Color = Green},
@@ -1330,24 +1434,22 @@ namespace Color.Misc
 
 			var Importants = new List<string>()
 			{
-				@"\bdelete\b",
-				@"\bnew\b",
+				Utils.IdentifierBeginningBoundary + @"delete" + Utils.IdentifierEndingBoundary,
+				Utils.IdentifierBeginningBoundary + @"new"    + Utils.IdentifierEndingBoundary,
 			};
 
 			// Importants
 			Colorizes.Add(new Colorize(){
 				Regex = new Regex
 				(
-						@"(?<Important>" + string.Join(@"|", Importants.Select(Important => Important).ToArray()) + @")"
-					,	RegexOptions.Compiled
+					@"(?<Important>" + string.Join(@"|", Importants.Select(Important => Important).ToArray()) + @")"
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
 						Name = "Important",
 						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment", "string"},
 						MustBeClassifiedAs = new List<string>(){"keyword"},
-						MustBeClassifiedAsAnyOf = new List<string>(){},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Important", Color = Rose},
@@ -1358,16 +1460,14 @@ namespace Color.Misc
 			Colorizes.Add(new Colorize(){
 				Regex = new Regex
 				(
-						@"(?<Access>\bprivate\b)"
-					,	RegexOptions.Compiled
+					@"(?<Access>" + Utils.IdentifierBeginningBoundary + @"private" + Utils.IdentifierEndingBoundary + @")"
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
 						Name = "Access",
 						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment", "string"},
 						MustBeClassifiedAs = new List<string>(){"keyword"},
-						MustBeClassifiedAsAnyOf = new List<string>(){},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Access", Color = Red},
@@ -1378,16 +1478,14 @@ namespace Color.Misc
 			Colorizes.Add(new Colorize(){
 				Regex = new Regex
 				(
-						@"(?<Access>\bprotected\b)"
-					,	RegexOptions.Compiled
+					@"(?<Access>" + Utils.IdentifierBeginningBoundary + @"protected" + Utils.IdentifierEndingBoundary + @")"
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
 						Name = "Access",
 						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment", "string"},
 						MustBeClassifiedAs = new List<string>(){"keyword"},
-						MustBeClassifiedAsAnyOf = new List<string>(){},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Access", Color = Yellow},
@@ -1398,16 +1496,14 @@ namespace Color.Misc
 			Colorizes.Add(new Colorize(){
 				Regex = new Regex
 				(
-						@"(?<Access>\bpublic\b)"
-					,	RegexOptions.Compiled
+					@"(?<Access>" + Utils.IdentifierBeginningBoundary + @"public" + Utils.IdentifierEndingBoundary + @")"
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
 						Name = "Access",
 						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment", "string"},
 						MustBeClassifiedAs = new List<string>(){"keyword"},
-						MustBeClassifiedAsAnyOf = new List<string>(){},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Access", Color = Green},
@@ -1423,15 +1519,12 @@ namespace Color.Misc
 				(
 						Utils.IdentifierBeginningBoundary
 					+	@"(?<Prefix>\$)"
-					,	RegexOptions.Compiled
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
 						Name = "Prefix",
-						CantBeClassifiedAs = new List<string>(){},
 						MustBeClassifiedAs = new List<string>(){"cppLocalVariable"},
-						MustBeClassifiedAsAnyOf = new List<string>(){},
-					}
+					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Prefix", Color = Gray},
@@ -1443,31 +1536,39 @@ namespace Color.Misc
 			foreach (Colorize Colorize in Colorizes)
 				foreach (Match Match in Colorize.Regex.Matches(Text))
 				{
-					foreach (var Condition in Colorize.Conditions)
-					{
-						var Start = Span.Start + Match.Groups[Condition.Name].Index;
-						var Length = Match.Groups[Condition.Name].Length;
-						var ConditionSpan = new Span(Start, Length);
-						var ConditionSnapshotSpan = new SnapshotSpan(Span.Snapshot, ConditionSpan);
-						var Intersections = IClassifier.GetClassificationSpans(ConditionSnapshotSpan);
-
-						foreach (var Intersection in Intersections)
+					if (Colorize.Conditions != null)
+						foreach (var Condition in Colorize.Conditions)
 						{
-							var Classifications = Intersection.ClassificationType.Classification.Split(new[]{" - "}, StringSplitOptions.None);
+							var Start = Span.Start + Match.Groups[Condition.Name].Index;
+							var Length = Match.Groups[Condition.Name].Length;
 
-							if (Condition.MustBeClassifiedAsAnyOf.Count > 0)
-								if (!Utils.IsClassifiedAs(Classifications, Condition.MustBeClassifiedAsAnyOf.ToArray()))
-									goto SkipMatch;
+							if (Length == 0)
+								continue;
+
+							var ConditionSpan = new Span(Start, Length);
+							var ConditionSnapshotSpan = new SnapshotSpan(Span.Snapshot, ConditionSpan);
+							var Intersections = IClassifier.GetClassificationSpans(ConditionSnapshotSpan);
+
+							foreach (var Intersection in Intersections)
+							{
+								var Classifications = Intersection.ClassificationType.Classification.Split(new[]{" - "}, StringSplitOptions.None);
+
+								if (Condition.MustBeClassifiedAsAnyOf != null)
+									if (Condition.MustBeClassifiedAsAnyOf.Count > 0)
+										if (!Utils.IsClassifiedAs(Classifications, Condition.MustBeClassifiedAsAnyOf.ToArray()))
+											goto SkipMatch;
 							
-							if (Condition.CantBeClassifiedAs.Count > 0)
-								if (Utils.IsClassifiedAs(Classifications, Condition.CantBeClassifiedAs.ToArray()))
-									goto SkipMatch;
+								if (Condition.CantBeClassifiedAs != null)
+									if (Condition.CantBeClassifiedAs.Count > 0)
+										if (Utils.IsClassifiedAs(Classifications, Condition.CantBeClassifiedAs.ToArray()))
+											goto SkipMatch;
 					
-							foreach (string Classification in Condition.MustBeClassifiedAs)
-								if (!Utils.IsClassifiedAs(Classifications, new[]{Classification}))
-									goto SkipMatch;
+								if (Condition.MustBeClassifiedAs != null)
+									foreach (string Classification in Condition.MustBeClassifiedAs)
+										if (!Utils.IsClassifiedAs(Classifications, new[]{Classification}))
+											goto SkipMatch;
+							}
 						}
-					}
 				
 					foreach (var Replacement in Colorize.Replacements)
 					{
@@ -1487,3 +1588,5 @@ namespace Color.Misc
 		}
 	}
 }
+
+#nullable disable
