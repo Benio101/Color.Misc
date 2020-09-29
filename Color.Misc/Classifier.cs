@@ -443,7 +443,7 @@ namespace Color.Misc
 					+	@")"
 					+	@"(?<Directive>include)"
 					+	Utils.IdentifierEndingBoundary
-					+	@"(?![ \f\t\v]+""Nade/Directives/Index/[^""]+\.h"")"
+					+	@"(?![ \f\t\v]+""sparky/directives/index/[^""]+\.h"")"
 					+	@"(?:"
 					+		@"[ \f\t\v]+"
 					+		@"(?<OpenPath>[""<])"
@@ -459,7 +459,7 @@ namespace Color.Misc
 				},
 			});
 
-			// #include "Nade/Directives/Index/
+			// #include "sparky/directives/index/
 			Colorizes.Add(new Colorize(){
 				Regex = new Regex
 				(
@@ -469,7 +469,7 @@ namespace Color.Misc
 					+	@")"
 					+	@"(?<Directive>"
 					+		@"include[ \f\t\v]+"
-					+		@"""Nade/Directives/Index/[^""]+\.h"""
+					+		@"""sparky/directives/index/[^""]+\.h"""
 					+	@")"
 				),
 				Replacements = new List<Replacement>(){
@@ -626,37 +626,37 @@ namespace Color.Misc
 
 			var PragmaOuterRegions = new List<Colors>()
 			{
-				new Colors(){Name = "Headers", Color = White},
-				new Colors(){Name = "Meta", Color = White},
+				new Colors(){Name = "headers", Color = White},
+				new Colors(){Name = "meta", Color = White},
 
-				new Colors(){Name = "Public", Color = Green},
-				new Colors(){Name = "Protected", Color = Yellow},
-				new Colors(){Name = "Private", Color = Red},
+				new Colors(){Name = "public", Color = Green},
+				new Colors(){Name = "protected", Color = Yellow},
+				new Colors(){Name = "private", Color = Red},
 				
-				new Colors(){Name = "(?:(?:Object|Function)-like macros|Macros)", Color = Purple},
-				new Colors(){Name = "Friends", Color = Blue},
-				new Colors(){Name = "Usings", Color = Blue},
-				new Colors(){Name = "Components", Color = Turquoise},
-				new Colors(){Name = "Enums", Color = Green},
-				new Colors(){Name = "Enum structs", Color = Green},
-				new Colors(){Name = "Concepts", Color = Lime},
-				new Colors(){Name = "Structs", Color = Lime},
-				new Colors(){Name = "Classes", Color = Lime},
-				new Colors(){Name = "Stores", Color = Yellow},
-				new Colors(){Name = "Members", Color = Yellow},
-				new Colors(){Name = "Properties", Color = Orange},
-				new Colors(){Name = "Fields", Color = Red},
-				new Colors(){Name = "Delegates", Color = Magenta},
-				new Colors(){Name = "Specials", Color = Lime},
-				new Colors(){Name = "Constructors", Color = Lime},
-				new Colors(){Name = "Operators", Color = Yellow},
-				new Colors(){Name = "Conversions", Color = Yellow},
-				new Colors(){Name = "Overrides", Color = Yellow},
-				new Colors(){Name = "Methods", Color = Yellow},
-				new Colors(){Name = "Getters", Color = Orange},
-				new Colors(){Name = "Setters", Color = Orange},
-				new Colors(){Name = "Functions", Color = Red},
-				new Colors(){Name = "Events", Color = Magenta},
+				new Colors(){Name = "(?:object|function)-like macros", Color = Purple},
+				new Colors(){Name = "friends", Color = Blue},
+				new Colors(){Name = "usings", Color = Blue},
+				new Colors(){Name = "components", Color = Turquoise},
+				new Colors(){Name = "enums", Color = Green},
+				new Colors(){Name = "enum structs", Color = Green},
+				new Colors(){Name = "concepts", Color = Lime},
+				new Colors(){Name = "structs", Color = Lime},
+				new Colors(){Name = "classes", Color = Lime},
+				new Colors(){Name = "stores", Color = Yellow},
+				new Colors(){Name = "members", Color = Yellow},
+				new Colors(){Name = "properties", Color = Orange},
+				new Colors(){Name = "fields", Color = Red},
+				new Colors(){Name = "delegates", Color = Magenta},
+				new Colors(){Name = "specials", Color = Lime},
+				new Colors(){Name = "constructors", Color = Lime},
+				new Colors(){Name = "operators", Color = Yellow},
+				new Colors(){Name = "conversions", Color = Yellow},
+				new Colors(){Name = "overrides", Color = Yellow},
+				new Colors(){Name = "methods", Color = Yellow},
+				new Colors(){Name = "getters", Color = Orange},
+				new Colors(){Name = "setters", Color = Orange},
+				new Colors(){Name = "functions", Color = Red},
+				new Colors(){Name = "events", Color = Magenta},
 			};
 
 			// #pragma region: PragmaOuterRegions
@@ -680,11 +680,11 @@ namespace Color.Misc
 
 			var PragmaInnerRegions = new List<Colors>()
 			{
-				new Colors(){Name = "(?:(?:object|function)-like )?macro", Color = Purple},
+				new Colors(){Name = "(?:object|function)-like macro", Color = Purple},
 				new Colors(){Name = "friend", Color = Blue},
 				new Colors(){Name = "using", Color = Blue},
 				new Colors(){Name = "component", Color = Turquoise},
-				new Colors(){Name = "enum", Color = Green},
+				new Colors(){Name = "enum(?! struct)", Color = Green},
 				new Colors(){Name = "enum struct", Color = Green},
 				new Colors(){Name = "concept", Color = Lime},
 				new Colors(){Name = "struct", Color = Lime},
@@ -705,7 +705,7 @@ namespace Color.Misc
 				new Colors(){Name = "function", Color = Red},
 				new Colors(){Name = "event", Color = Magenta},
 
-				new Colors(){Name = "namespace", Color = Gray},
+				new Colors(){Name = "namespace", Color = Silver},
 			};
 
 			// #pragma region: PragmaInnerRegions
@@ -824,36 +824,19 @@ namespace Color.Misc
 				},
 			});
 
-			// comment directive: meta
-			Colorizes.Add(new Colorize(){
-				Regex = new Regex
-				(
-						@"(?<="
-					+		@"(?<NotComment>^|.)"
-					+		@"(?<Slashes>//+)"
-					+		@" *"
-					+	@")"
-					+	@"(?<BackSlash>\\)"
-					+	@"(?<Command>brief|details|note)"
-					+	Utils.IdentifierEndingBoundary
-				),
-				Conditions = new List<Condition>(){
-					new Condition(){
-						Name = "NotComment",
-						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment"},
-					},
-					new Condition(){
-						Name = "Slashes",
-						MustBeClassifiedAsAnyOf = new List<string>(){"comment", "XML Doc Comment"},
-					},
-				},
-				Replacements = new List<Replacement>(){
-					new Replacement(){Name = "BackSlash", Color = Dark},
-					new Replacement(){Name = "Command", Color = Blue},
-				},
-			});
+			var CommentDirectives = new List<Colors>()
+			{
+				new Colors(){Name = @"bug|flea", Color = Red_dark},
+				new Colors(){Name = @"todo|warn", Color = Orange_dark},
+				new Colors(){Name = @"hack|hard", Color = Yellow_dark}, 
+				new Colors(){Name = @"fix",  Color = Green_dark},
+				new Colors(){Name = @"brief|details|note|reason",  Color = Blue_dark},
+				new Colors(){Name = @"return|spare|throw",  Color = Violet_dark},
+				new Colors(){Name = @"see|example",  Color = Magenta_dark},
+			};
 
-			// comment directive: control
+			// comment directives
+			foreach (var CommentDirective in CommentDirectives)
 			Colorizes.Add(new Colorize(){
 				Regex = new Regex
 				(
@@ -862,8 +845,8 @@ namespace Color.Misc
 					+		@"(?<Slashes>//+)"
 					+		@" *"
 					+	@")"
-					+	@"(?<BackSlash>\\)"
-					+	@"(?<Command>return|spare)"
+					+	@"(?<BackSlash>[\\@])"
+					+	@"(?<Command>"  + CommentDirective.Name + @")"
 					+	Utils.IdentifierEndingBoundary
 				),
 				Conditions = new List<Condition>(){
@@ -878,123 +861,7 @@ namespace Color.Misc
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "BackSlash", Color = Dark},
-					new Replacement(){Name = "Command", Color = Violet},
-				},
-			});
-
-			// comment directive: external
-			Colorizes.Add(new Colorize(){
-				Regex = new Regex
-				(
-						@"(?<="
-					+		@"(?<NotComment>^|.)"
-					+		@"(?<Slashes>//+)"
-					+		@" *"
-					+	@")"
-					+	@"(?<BackSlash>\\)"
-					+	@"(?<Command>see)"
-					+	Utils.IdentifierEndingBoundary
-				),
-				Conditions = new List<Condition>(){
-					new Condition(){
-						Name = "NotComment",
-						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment"},
-					},
-					new Condition(){
-						Name = "Slashes",
-						MustBeClassifiedAsAnyOf = new List<string>(){"comment", "XML Doc Comment"},
-					},
-				},
-				Replacements = new List<Replacement>(){
-					new Replacement(){Name = "BackSlash", Color = Dark},
-					new Replacement(){Name = "Command", Color = Magenta},
-				},
-			});
-
-			// comment directive: error
-			Colorizes.Add(new Colorize(){
-				Regex = new Regex
-				(
-						@"(?<="
-					+		@"(?<NotComment>^|.)"
-					+		@"(?<Slashes>//+)"
-					+		@" *"
-					+	@")"
-					+	@"(?<BackSlash>\\)"
-					+	@"(?<Command>bug)"
-					+	Utils.IdentifierEndingBoundary
-				),
-				Conditions = new List<Condition>(){
-					new Condition(){
-						Name = "NotComment",
-						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment"},
-					},
-					new Condition(){
-						Name = "Slashes",
-						MustBeClassifiedAsAnyOf = new List<string>(){"comment", "XML Doc Comment"},
-					},
-				},
-				Replacements = new List<Replacement>(){
-					new Replacement(){Name = "BackSlash", Color = Dark},
-					new Replacement(){Name = "Command", Color = Red},
-				},
-			});
-
-			// comment directive: warning
-			Colorizes.Add(new Colorize(){
-				Regex = new Regex
-				(
-						@"(?<="
-					+		@"(?<NotComment>^|.)"
-					+		@"(?<Slashes>//+)"
-					+		@" *"
-					+	@")"
-					+	@"(?<BackSlash>\\)"
-					+	@"(?<Command>todo)"
-					+	Utils.IdentifierEndingBoundary
-				),
-				Conditions = new List<Condition>(){
-					new Condition(){
-						Name = "NotComment",
-						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment"},
-					},
-					new Condition(){
-						Name = "Slashes",
-						MustBeClassifiedAsAnyOf = new List<string>(){"comment", "XML Doc Comment"},
-					},
-				},
-				Replacements = new List<Replacement>(){
-					new Replacement(){Name = "BackSlash", Color = Dark},
-					new Replacement(){Name = "Command", Color = Orange},
-				},
-			});
-
-			// comment directive: note
-			Colorizes.Add(new Colorize(){
-				Regex = new Regex
-				(
-						@"(?<="
-					+		@"(?<NotComment>^|.)"
-					+		@"(?<Slashes>//+)"
-					+		@" *"
-					+	@")"
-					+	@"(?<BackSlash>\\)"
-					+	@"(?<Command>hack)"
-					+	Utils.IdentifierEndingBoundary
-				),
-				Conditions = new List<Condition>(){
-					new Condition(){
-						Name = "NotComment",
-						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment"},
-					},
-					new Condition(){
-						Name = "Slashes",
-						MustBeClassifiedAsAnyOf = new List<string>(){"comment", "XML Doc Comment"},
-					},
-				},
-				Replacements = new List<Replacement>(){
-					new Replacement(){Name = "BackSlash", Color = Dark},
-					new Replacement(){Name = "Command", Color = Yellow},
+					new Replacement(){Name = "Command", Color = CommentDirective.Color},
 				},
 			});
 
@@ -1007,7 +874,7 @@ namespace Color.Misc
 					+		@"(?<Slashes>//+)"
 					+		@" *"
 					+	@")"
-					+	@"(?<BackSlash>\\)"
+					+	@"(?<BackSlash>[\\@])"
 					+	@"(?<Command>param)"
 					+	Utils.IdentifierEndingBoundary
 					+	@"(?:"
@@ -1027,8 +894,8 @@ namespace Color.Misc
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "BackSlash", Color = Dark},
-					new Replacement(){Name = "Command", Color = Blue},
-					new Replacement(){Name = "Param", Color = Cyan},
+					new Replacement(){Name = "Command", Color = Blue_dark},
+					new Replacement(){Name = "Param", Color = Cyan_dark},
 				},
 			});
 
@@ -1041,7 +908,7 @@ namespace Color.Misc
 					+		@"(?<Slashes>//+)"
 					+		@" *"
 					+	@")"
-					+	@"(?<BackSlash>\\)"
+					+	@"(?<BackSlash>[\\@])"
 					+	@"(?<Command>tparam)"
 					+	Utils.IdentifierEndingBoundary
 					+	@"(?:"
@@ -1061,12 +928,19 @@ namespace Color.Misc
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "BackSlash", Color = Dark},
-					new Replacement(){Name = "Command", Color = Blue},
-					new Replacement(){Name = "TParam", Color = Lime},
+					new Replacement(){Name = "Command", Color = Blue_dark},
+					new Replacement(){Name = "TParam", Color = Lime_dark},
 				},
 			});
 
-			// comment: quote
+			var Specials = new List<Colors>()
+			{
+				new Colors(){Name = @"!",  Color = Red_dark},   // Important
+				new Colors(){Name = @">",  Color = Green_dark}, // Quote
+			};
+
+			// comment: specials
+			foreach (var Special in Specials)
 			Colorizes.Add(new Colorize(){
 				Regex = new Regex
 				(
@@ -1075,8 +949,8 @@ namespace Color.Misc
 					+		@"(?<Slashes>//+)"
 					+		@" *"
 					+	@")"
-					+	@"(?<Mark>\>)"
-					+	@"(?<Quote>.*)"
+					+	@"(?<Mark>" + Special.Name + ")"
+					+	@"(?<Special>.*)"
 				),
 				Conditions = new List<Condition>(){
 					new Condition(){
@@ -1084,62 +958,13 @@ namespace Color.Misc
 						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment"},
 					},
 					new Condition(){
-						Name = "Quote",
+						Name = "Special",
 						MustBeClassifiedAsAnyOf = new List<string>(){"comment", "XML Doc Comment"},
 					},
 				},
 				Replacements = new List<Replacement>(){
 					new Replacement(){Name = "Mark", Color = Dark},
-					new Replacement(){Name = "Quote", Color = Green},
-				},
-			});
-
-			var References = new List<Colors>()
-			{
-				new Colors(){Name = @":",  Color = Red},       // Static
-				new Colors(){Name = @",",  Color = Orange},    // Property
-				new Colors(){Name = @"\.", Color = Yellow},    // Member
-				new Colors(){Name = @"\^", Color = Lime},      // Type
-				new Colors(){Name = @"#",  Color = Green},     // Literal
-				new Colors(){Name = @"\*", Color = Turquoise}, // Import
-				new Colors(){Name = @"\&", Color = Cyan},      // Parameter
-				new Colors(){Name = @"~",  Color = Blue},      // Meta
-				new Colors(){Name = @"\?", Color = Violet},    // Control
-				new Colors(){Name = @"%",  Color = Purple},    // Macro
-				new Colors(){Name = @"\!", Color = Magenta},   // Event
-				new Colors(){Name = @"\|", Color = Rose},      // Export
-				new Colors(){Name = @"@",  Color = White},     // Local
-			};
-
-			// comment: references
-			foreach (var Reference in References)
-			Colorizes.Add(new Colorize(){
-				Regex = new Regex
-				(
-						@"(?<="                       // Ensure `Slashes` is beginning of comment ∵
-					+		@"(?<NotComment>^|.)"     // - there's nothing before `Slashes` xor a character before `Slashes` is not a comment.
-					+		@"(?<Slashes>//+)"        // - `Slashes` is a comment.
-					+		@" +"                     // Ensure comment is not a disabled code ∵ it does not begins with a tab.
-					+		@"(?!>)"                  // Ensure comment is not a quote ∵ it does not begins with a closing chevron.
-					+		@"[^`]*(?:`[^`]*`[^`]*)*" // Make sure reference is not inside an inline code ∵ it's not preceded by odd number of backticks.
-					+	@")"
-					+	Utils.IdentifierBeginningBoundary
-					+	@"(?<Mark>" + Reference.Name + @")"
-					+	@"(?<Reference>" + Utils.Identifier + @")"
-				),
-				Conditions = new List<Condition>(){
-					new Condition(){
-						Name = "NotComment",
-						CantBeClassifiedAs = new List<string>(){"comment", "XML Doc Comment"},
-					},
-					new Condition(){
-						Name = "Slashes",
-						MustBeClassifiedAsAnyOf = new List<string>(){"comment", "XML Doc Comment"},
-					},
-				},
-				Replacements = new List<Replacement>(){
-					new Replacement(){Name = "Mark", Color = Dark},
-					new Replacement(){Name = "Reference", Color = Reference.Color},
+					new Replacement(){Name = "Special", Color = Special.Color},
 				},
 			});
 
@@ -1151,7 +976,7 @@ namespace Color.Misc
 					+		@"(?<NotComment>^|.)"     // - there's nothing before `Slashes` xor a character before `Slashes` is not a comment.
 					+		@"(?<Slashes>//+)"        // - `Slashes` is a comment.
 					+		@" +"                     // Ensure comment is not a disabled code ∵ it does not begins with a tab.
-					+		@"(?!>)"                  // Ensure comment is not a quote ∵ it does not begins with a closing chevron.
+					+		@"(?![<>!#:])"            // Ensure comment is not a quote ∵ it does not begins with a closing chevron.
 					+		@"[^`]*(?:`[^`]*`[^`]*)*" // Make sure reference is not inside an inline code ∵ it's not preceded by odd number of backticks.
 					+	@")"
 					+	@"(?<OpeningBacktick>`)"
@@ -1550,7 +1375,7 @@ namespace Color.Misc
 							var Intersections = IClassifier.GetClassificationSpans(ConditionSnapshotSpan);
 
 							foreach (var Intersection in Intersections)
-							{
+							{								
 								var Classifications = Intersection.ClassificationType.Classification.Split(new[]{" - "}, StringSplitOptions.None);
 
 								if (Condition.MustBeClassifiedAsAnyOf != null)
