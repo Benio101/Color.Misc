@@ -18,7 +18,7 @@ namespace Color.Misc
 		#pragma warning disable 67
 		public event EventHandler<ClassificationChangedEventArgs>? ClassificationChanged;
 		#pragma warning restore 67
-		
+
 		#pragma warning disable IDE0052 // Remove unread private members
 		private readonly IClassificationType White;
 		private readonly IClassificationType Silver;
@@ -145,8 +145,9 @@ namespace Color.Misc
 
 			#pragma warning disable IDE0028 // Simplify collection initialization
 			List<Colorize> Colorizes = new List<Colorize>();
-			#pragma warning restore IDE0028 // Simplify collection initialization
+#pragma warning restore IDE0028 // Simplify collection initialization
 
+			#region rules
 			#region Directives
 
 			// #
@@ -632,7 +633,7 @@ namespace Color.Misc
 				new Colors(){Name = "public", Color = Green},
 				new Colors(){Name = "protected", Color = Yellow},
 				new Colors(){Name = "private", Color = Red},
-				
+
 				new Colors(){Name = "(?:object|function)-like macros", Color = Purple},
 				new Colors(){Name = "friends", Color = Blue},
 				new Colors(){Name = "usings", Color = Blue},
@@ -828,7 +829,7 @@ namespace Color.Misc
 			{
 				new Colors(){Name = @"bug|flea", Color = Red_dark},
 				new Colors(){Name = @"todo|warn", Color = Orange_dark},
-				new Colors(){Name = @"hack|hard", Color = Yellow_dark}, 
+				new Colors(){Name = @"hack|hard", Color = Yellow_dark},
 				new Colors(){Name = @"fix",  Color = Green_dark},
 				new Colors(){Name = @"brief|details|note|reason",  Color = Blue_dark},
 				new Colors(){Name = @"return|spare|throw",  Color = Violet_dark},
@@ -1357,6 +1358,7 @@ namespace Color.Misc
 			});
 
 			#endregion
+			#endregion rules
 
 			foreach (Colorize Colorize in Colorizes)
 				foreach (Match Match in Colorize.Regex.Matches(Text))
@@ -1375,26 +1377,26 @@ namespace Color.Misc
 							var Intersections = IClassifier.GetClassificationSpans(ConditionSnapshotSpan);
 
 							foreach (var Intersection in Intersections)
-							{								
+							{
 								var Classifications = Intersection.ClassificationType.Classification.Split(new[]{" - "}, StringSplitOptions.None);
 
 								if (Condition.MustBeClassifiedAsAnyOf != null)
 									if (Condition.MustBeClassifiedAsAnyOf.Count > 0)
 										if (!Utils.IsClassifiedAs(Classifications, Condition.MustBeClassifiedAsAnyOf.ToArray()))
 											goto SkipMatch;
-							
+
 								if (Condition.CantBeClassifiedAs != null)
 									if (Condition.CantBeClassifiedAs.Count > 0)
 										if (Utils.IsClassifiedAs(Classifications, Condition.CantBeClassifiedAs.ToArray()))
 											goto SkipMatch;
-					
+
 								if (Condition.MustBeClassifiedAs != null)
 									foreach (string Classification in Condition.MustBeClassifiedAs)
 										if (!Utils.IsClassifiedAs(Classifications, new[]{Classification}))
 											goto SkipMatch;
 							}
 						}
-				
+
 					foreach (var Replacement in Colorize.Replacements)
 					{
 						var Start = Span.Start + Match.Groups[Replacement.Name].Index;
