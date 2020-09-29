@@ -145,7 +145,7 @@ namespace Color.Misc
 
 			#pragma warning disable IDE0028 // Simplify collection initialization
 			List<Colorize> Colorizes = new List<Colorize>();
-#pragma warning restore IDE0028 // Simplify collection initialization
+			#pragma warning restore IDE0028 // Simplify collection initialization
 
 			#region rules
 			#region Directives
