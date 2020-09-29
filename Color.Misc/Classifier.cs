@@ -147,6 +147,7 @@ namespace Color.Misc
 			List<Colorize> Colorizes = new List<Colorize>();
 			#pragma warning restore IDE0028 // Simplify collection initialization
 
+			// Detete (or edit) all rules from the following `rules` region.
 			#region rules
 			#region Directives
 
@@ -457,24 +458,6 @@ namespace Color.Misc
 					new Replacement(){Name = "Path", Color = Green},
 					new Replacement(){Name = "OpenPath", Color = Gray},
 					new Replacement(){Name = "ClosePath", Color = Gray},
-				},
-			});
-
-			// #include "sparky/directives/index/
-			Colorizes.Add(new Colorize(){
-				Regex = new Regex
-				(
-						@"(?<="
-					+		@"^[ \f\t\v]*"
-					+		@"#[ \f\t\v]*"
-					+	@")"
-					+	@"(?<Directive>"
-					+		@"include[ \f\t\v]+"
-					+		@"""sparky/directives/index/[^""]+\.h"""
-					+	@")"
-				),
-				Replacements = new List<Replacement>(){
-					new Replacement(){Name = "Directive", Color = Dark},
 				},
 			});
 
